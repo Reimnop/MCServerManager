@@ -1,0 +1,190 @@
+﻿@page "/"
+@using MCServerManager.Services
+@using System.Text.RegularExpressions
+
+@implements IDisposable
+
+@inject HardwareStatsService hardwareStatsService
+@inject MinecraftServerService minecraftServerService
+@inject IJSRuntime js
+
+<PageTitle>Home - MCServerManager</PageTitle>
+
+<div class="container">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <h5 class="card-header">
+                    @if (isServerOnline)
+                    {
+                        <span class="online-dot"></span>
+                    }
+                    else
+                    {
+                        <span class="offline-dot"></span>
+                    }
+                    Stats
+                </h5>
+                <div class="card-body">
+                    <div class="vstack gap-2">
+                        <div class="w-100 border rounded-2 p-1">
+                            <div class="left middle">
+                                <img width="24" height="24" src="imgs/bootstrap/cpu.svg" alt="cpu"/>
+                            </div>
+                            <div class="right middle">@MathF.Round(stats.CpuLoad, 1)%</div>
+                        </div>
+                        <div class="w-100 border rounded-2 p-1">
+                            <div class="left middle">
+                                <img width="24" height="24" src="imgs/bootstrap/device-hdd.svg" alt="storage"/>
+                            </div>
+                            <div class="right middle">@MathF.Round(stats.StorageUsage, 1) / @MathF.Round(stats.MaxStorage, 1) GB</div>
+                        </div>
+                        <div class="w-100 border rounded-2 p-1">
+                            <div class="left middle">
+                                <img width="24" height="24" src="imgs/bootstrap/memory.svg" alt="cpu"/>
+                            </div>
+                            <div class="right middle">@MathF.Round(stats.MemoryUsage, 1) / @MathF.Round(stats.MaxMemory, 1) GB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row g-2">
+                        <div class="col">
+                            @if (isServerOnline)
+                            {
+                                <button class="w-100 btn btn-primary" disabled>Start</button>
+                            }
+                            else
+                            {
+                                <button @onclick="StartServerAsync" class="w-100 btn btn-primary">Start</button>
+                            }
+                        </div>
+                        <div class="col">
+                            @if (isServerOnline)
+                            {
+                                <button @onclick="StopServerAsync" class="w-100 btn btn-danger">Stop</button>
+                            }
+                            else
+                            {
+                                <button class="w-100 btn btn-danger" disabled>Stop</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="shadow rounded-2 bg-white border">
+                <div class="vstack">
+                    <div style="height: 40em">
+                        <textarea readonly @ref=textAreaRef value="@consoleOutput" class="w-100 h-100 border-0 rounded-2 console-textarea"></textarea>
+                    </div>
+                    <div class="border-top">
+                        <form class="cmd-input-form" onsubmit="@SubmitCommand">
+                            <input class="rounded-2 w-100 cmd-input" type="text" placeholder="Type command" @bind="@inputCommand">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string inputCommand = string.Empty;
+    
+    private bool isServerOnline;
+    private string consoleOutput;
+    private HardwareStats stats;
+    private ElementReference textAreaRef;
+
+    private bool shouldScroll = false;
+    
+    protected override void OnInitialized()
+    {
+        stats = hardwareStatsService.Stats;
+        hardwareStatsService.OnHardwareUpdate += OnHardwareUpdate;
+
+        isServerOnline = minecraftServerService.IsServerOnline;
+        minecraftServerService.OnServerStatusChanged += OnServerStatusChanged;
+        minecraftServerService.OnServerConsoleReceived += OnServerConsoleReceived;
+        
+        SetConsoleOutput(minecraftServerService.ConsoleOutput);
+    }
+
+    private void SubmitCommand()
+    {
+        if (!string.IsNullOrWhiteSpace(inputCommand) && isServerOnline)
+        {
+            minecraftServerService.SendCommand(inputCommand);
+            inputCommand = string.Empty;
+        }
+    }
+
+    private void SetConsoleOutput(string text)
+    {
+        consoleOutput = string.Join("\n", TakeLastLines(text, 80));
+        shouldScroll = true;
+    }
+    
+    private List<string> TakeLastLines(string text, int count)
+    {
+        List<string> lines = new List<string>();
+        Match match = Regex.Match(text, "^.*$", RegexOptions.Multiline | RegexOptions.RightToLeft);
+
+        while (match.Success && lines.Count < count)
+        {
+            lines.Insert(0, match.Value);
+            match = match.NextMatch();
+        }
+
+        return lines;
+    }
+
+    public void StartServerAsync()
+    {
+        minecraftServerService.StartServer();
+    }
+
+    public void StopServerAsync()
+    {
+        minecraftServerService.StopServer();
+    }
+
+    private async void OnHardwareUpdate(object sender, HardwareUpdateEventArgs eventArgs)
+    {
+        stats = eventArgs.Stats;
+
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async void OnServerStatusChanged(object sender, bool serverStatus)
+    {
+        isServerOnline = serverStatus;
+
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async void OnServerConsoleReceived(object sender)
+    {
+        var service = (MinecraftServerService)sender;
+        SetConsoleOutput(service.ConsoleOutput);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (shouldScroll)
+        {
+            shouldScroll = false;
+            
+            await js.InvokeVoidAsync("scrollToEnd", textAreaRef);
+        }
+    }
+
+    public void Dispose()
+    {
+        hardwareStatsService.OnHardwareUpdate -= OnHardwareUpdate;
+    }
+}

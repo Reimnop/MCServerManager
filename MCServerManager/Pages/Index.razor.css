@@ -1,0 +1,57 @@
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.middle {
+    vertical-align: middle;
+}
+
+.online-dot {
+    height: 0.8em;
+    width: 0.8em;
+    background-color: rgb(75, 255, 75);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.offline-dot {
+    height: 0.8em;
+    width: 0.8em;
+    background-color: rgb(255, 75, 75);
+    border-radius: 50%;
+    display: inline-block;
+} 
+
+.cmd-input-form {
+    display: flex;
+    flex-direction: row;
+}
+
+.cmd-input-form .cmd-input {
+    border: 0;
+    box-shadow: none;
+    transition: all 0.2s ease-out;
+}
+
+.cmd-input-form .cmd-input:focus {
+    outline: none !important;
+    box-shadow: inset 0 -2px 0 0 rgb(80, 80, 80);
+}
+
+.console-textarea {
+    border: 0;
+    resize: none; 
+    font-size: 0.8em
+}
+
+.console-textarea:focus {
+    outline: none !important;
+}
+
+.border-left {
+    border-left: 1px solid #dee2e6!important
+}

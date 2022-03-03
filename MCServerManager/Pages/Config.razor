@@ -1,0 +1,86 @@
+﻿@page "/config"
+@using MCServerManager.Models
+@using MCServerManager.Data
+
+<PageTitle>Config - MCServerManager</PageTitle>
+
+<div class="container">
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="card shadow">
+                <div class="card-header">Java Virtual Machine</div>
+                <div class="card-body">
+                    <EditForm Model="@jvmConfigModel" OnValidSubmit="HandleValidJVMConfig">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        
+                        <label for="java-path">Java path</label>
+                        <InputText id="java-path" class="form-control" @bind-Value="jvmConfigModel.JavaPath" placeholder="Path"/>
+
+                        <label for="min-ram" class="mt-2">Minimum RAM</label>
+                        <InputNumber id="min-ram" class="form-control" @bind-Value="jvmConfigModel.MinRamMb" placeholder="Minimum RAM (MB)"/>
+
+                        <label for="max-ram" class="mt-2">Maximum RAM</label>
+                        <InputNumber id="max-ram" class="form-control" @bind-Value="jvmConfigModel.MaxRamMb" placeholder="Maximum RAM (MB)"/>
+
+                        <label for="extra-args" class="mt-2">Additional JVM arguments</label>
+                        <InputText id="extra-args" class="form-control" @bind-Value="jvmConfigModel.ExtraArgs" placeholder="Additional arguments"/>
+
+                        <button type="submit" class="btn btn-primary mt-2">Save changes</button>
+                    </EditForm>
+                </div>
+            </div>    
+        </div>
+        <div class="col-md">
+            <div class="card shadow">
+                <div class="card-header">Server</div>
+                <div class="card-body">
+                    <EditForm Model="@serverConfigModel" OnValidSubmit="HandleValidServerConfig">
+                        <DataAnnotationsValidator/>
+                        <ValidationSummary/>
+
+                        <label for="sv-dir">Server directory</label>
+                        <InputText id="sv-dir" class="form-control" @bind-Value="serverConfigModel.ServerDirectory" placeholder="Path"/>
+
+                        <label for="jar-file" class="mt-2">Jar file</label>
+                        <InputText id="jar-file" class="form-control" @bind-Value="serverConfigModel.JarFile" placeholder="File name"/>
+                        
+                        <div class="mt-2">
+                            <label>
+                                <InputCheckbox @bind-Value="serverConfigModel.NoGui"/> No GUI
+                            </label>
+                        </div>
+
+                        <label for="extra-sv-args" class="mt-2">Additional server arguments</label>
+                        <InputText id="extra-sv-args" class="form-control" @bind-Value="serverConfigModel.ExtraArgs" placeholder="Additional arguments"/>
+
+                        <button type="submit" class="btn btn-primary mt-2">Save changes</button>
+                    </EditForm>
+                </div>
+            </div>    
+        </div>
+    </div>
+</div>
+
+@code {
+    private JvmConfigModel jvmConfigModel;
+    private ServerConfigModel serverConfigModel;
+
+    protected override void OnInitialized()
+    {
+        jvmConfigModel = ConfigManager.JvmConfig;
+        serverConfigModel = ConfigManager.ServerConfig;
+    }
+
+    private void HandleValidJVMConfig()
+    {
+        ConfigManager.JvmConfig = jvmConfigModel;
+        ConfigManager.SaveJvmConfig();
+    }
+
+    private void HandleValidServerConfig()
+    {
+        ConfigManager.ServerConfig = serverConfigModel;
+        ConfigManager.SaveServerConfig();
+    }
+}
