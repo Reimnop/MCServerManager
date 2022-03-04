@@ -1,25 +1,11 @@
-﻿using LibreHardwareMonitor.Hardware;
+﻿using System.Runtime.InteropServices;
+using MCServerManager.Utils;
 
 namespace MCServerManager.Services;
 
-public class UpdateVisitor : IVisitor
-{
-    public void VisitComputer(IComputer computer)
-    {
-        computer.Traverse(this);
-    }
-    public void VisitHardware(IHardware hardware)
-    {
-        hardware.Update();
-        foreach (IHardware subHardware in hardware.SubHardware) subHardware.Accept(this);
-    }
-    public void VisitSensor(ISensor sensor) { }
-    public void VisitParameter(IParameter parameter) { }
-}
-
 public struct HardwareStats
 {
-    public float CpuLoad;
+    public float CpuUsage;
     public float StorageUsage;
     public float MaxStorage;
     public float MemoryUsage;
@@ -42,54 +28,44 @@ public class HardwareStatsService
 {
     public HardwareStats Stats { get; private set; }
 
-    public event HardwareUpdateEventHandler OnHardwareUpdate;
-
-    private Computer computer;
-    private DriveInfo driveInfo;
+    public event HardwareUpdateEventHandler? OnHardwareUpdate;
+    
+    private readonly DriveInfo driveInfo;
 
     public HardwareStatsService()
     {
-        computer = new Computer
-        {
-            IsCpuEnabled = true,
-            IsMemoryEnabled = true
-        };
-        computer.Open();
-
         driveInfo = DriveInfo.GetDrives().First(x => x.IsReady);
-        
+
         _ = UpdatePeriodicallyAsync();
     }
 
     private async Task UpdatePeriodicallyAsync()
     {
-        for (;;)
+        try
         {
-            computer.Accept(new UpdateVisitor());
-        
-            IHardware cpu = computer.Hardware.First(x => x.HardwareType == HardwareType.Cpu);
-            ISensor cpuLoadSensor = cpu.Sensors.First(x => x.SensorType == SensorType.Load);
-            float cpuLoad = (float)cpuLoadSensor.Value;
-
-            IHardware memory = computer.Hardware.First(x => x.HardwareType == HardwareType.Memory);
-            ISensor memoryUsedSensor = memory.Sensors.First(x => x.Name == "Memory Used");
-            ISensor memoryAvailSensor = memory.Sensors.First(x => x.Name == "Memory Available");
-            
-            float memoryUsage = (float)memoryUsedSensor.Value;
-            float maxMemory = (float)memoryAvailSensor.Value + memoryUsage;
-            
-            Stats = new HardwareStats
+            for (;;)
             {
-                CpuLoad = cpuLoad,
-                StorageUsage = (driveInfo.TotalSize - driveInfo.AvailableFreeSpace) / 1024.0f / 1024.0f / 1024.0f,
-                MaxStorage = driveInfo.TotalSize / 1024.0f / 1024.0f / 1024.0f,
-                MemoryUsage = memoryUsage,
-                MaxMemory = maxMemory
-            };
-            
-            OnHardwareUpdate?.Invoke(this, new HardwareUpdateEventArgs(Stats));
-            
-            await Task.Delay(1000);
+                Stats = new HardwareStats
+                {
+                    CpuUsage = (float)CpuMemoryMetrics4LinuxUtils.GetOverallCpuUsagePercentage(),
+                    StorageUsage = (driveInfo.TotalSize - driveInfo.AvailableFreeSpace) / 1024.0f / 1024.0f / 1024.0f,
+                    MaxStorage = driveInfo.TotalSize / 1024.0f / 1024.0f / 1024.0f,
+                    MemoryUsage = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
+                        CpuMemoryMetrics4LinuxUtils.GetUsedMemoryForAllProcesses() / 1024.0f / 1024.0f / 1024.0f : 
+                        float.NaN,
+                    MaxMemory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
+                        CpuMemoryMetrics4LinuxUtils.GetTotalMemory() / 1024.0f / 1024.0f / 1024.0f : 
+                        float.NaN,
+                };
+
+                OnHardwareUpdate?.Invoke(this, new HardwareUpdateEventArgs(Stats));
+
+                await Task.Delay(500);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
     }
 }
