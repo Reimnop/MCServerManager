@@ -71,7 +71,7 @@
     </div>
     <div class="shadow-colored bg-slate-700 flex flex-col w-full rounded overflow-hidden basis-2/3">
         <textarea readonly @ref=textAreaRef value="@consoleOutput" class="w-full h-[50em] border-none text-sm bg-slate-800 resize-none focus:outline-none"></textarea>
-        <form onsubmit="SubmitCommand">
+        <form onsubmit="@SubmitCommand">
             <input class="w-full bg-transparent border-none outline-none focus:shadow-[inset_0_-3px_0_0_rgb(30,41,59)] duration-200" type="text" placeholder="Type command" @bind="@inputCommand">
         </form>
     </div>
