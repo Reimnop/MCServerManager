@@ -14,4 +14,15 @@ public class ServerConfigModel
     public bool NoGui { get; set; }
 
     public string? ExtraArgs { get; set; }
+
+    public ServerConfigModel Copy() 
+    {
+        return new ServerConfigModel 
+        {
+            ServerDirectory = ServerDirectory,
+            JarFile = JarFile,
+            NoGui = NoGui,
+            ExtraArgs = ExtraArgs
+        };
+    }
 }

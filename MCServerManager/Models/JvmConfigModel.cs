@@ -16,4 +16,15 @@ public class JvmConfigModel
     [CompareTo(nameof(MinRamMb), ComparisonType.GreaterThanOrEqual)]
     public int? MaxRamMb { get; set; }
     public string? ExtraArgs { get; set; }
+
+    public JvmConfigModel Copy() 
+    {
+        return new JvmConfigModel 
+        {
+            JavaPath = JavaPath,
+            MinRamMb = MinRamMb,
+            MaxRamMb = MaxRamMb,
+            ExtraArgs = ExtraArgs
+        };
+    }
 }

@@ -41,31 +41,26 @@ public class HardwareStatsService
 
     private async Task UpdatePeriodicallyAsync()
     {
-        try
+        for (;;)
         {
-            for (;;)
+            Stats = new HardwareStats
             {
-                Stats = new HardwareStats
-                {
-                    CpuUsage = (float)CpuMemoryMetrics4LinuxUtils.GetOverallCpuUsagePercentage(),
-                    StorageUsage = (driveInfo.TotalSize - driveInfo.AvailableFreeSpace) / 1024.0f / 1024.0f / 1024.0f,
-                    MaxStorage = driveInfo.TotalSize / 1024.0f / 1024.0f / 1024.0f,
-                    MemoryUsage = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
-                        CpuMemoryMetrics4LinuxUtils.GetUsedMemoryForAllProcesses() / 1024.0f / 1024.0f / 1024.0f : 
-                        float.NaN,
-                    MaxMemory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
-                        CpuMemoryMetrics4LinuxUtils.GetTotalMemory() / 1024.0f / 1024.0f / 1024.0f : 
-                        float.NaN,
-                };
+                CpuUsage = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
+                    (float)CpuMemoryMetrics4LinuxUtils.GetOverallCpuUsagePercentage() :
+                    float.NaN,
+                StorageUsage = (driveInfo.TotalSize - driveInfo.AvailableFreeSpace) / 1024.0f / 1024.0f / 1024.0f,
+                MaxStorage = driveInfo.TotalSize / 1024.0f / 1024.0f / 1024.0f,
+                MemoryUsage = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
+                    CpuMemoryMetrics4LinuxUtils.GetUsedMemoryForAllProcesses() / 1024.0f / 1024.0f / 1024.0f : 
+                    float.NaN,
+                MaxMemory = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? 
+                    CpuMemoryMetrics4LinuxUtils.GetTotalMemory() / 1024.0f / 1024.0f / 1024.0f : 
+                    float.NaN,
+            };
 
-                OnHardwareUpdate?.Invoke(this, new HardwareUpdateEventArgs(Stats));
+            OnHardwareUpdate?.Invoke(this, new HardwareUpdateEventArgs(Stats));
 
-                await Task.Delay(500);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
+            await Task.Delay(500);
         }
     }
 }

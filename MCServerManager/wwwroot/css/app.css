@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply text-slate-200 bg-slate-700
+}
+
+.shadow-colored {
+    @apply shadow shadow-slate-900
+}
+
+.sidebar-item {
+    @apply px-2 my-2 h-12 w-full
+}
+
+.nav-link {
+    @apply duration-200
+}
+
+.nav-link:hover {
+    @apply: text-slate-400 
+}
+
+.nav-link .nav-link-bg {
+    @apply w-full h-12 flex items-center rounded duration-200
+}
+
+.active .nav-link-bg {
+    @apply shadow-colored bg-slate-800
+}
+
+.card {
+    @apply shadow-colored bg-slate-700 flex flex-col w-full rounded overflow-hidden
+}
+
+.card-header {
+    @apply p-2 shadow-colored bg-slate-800
+}
+
+.card-body {
+    @apply p-4
+}
+
+.card-footer {
+    @apply p-2 shadow-colored bg-slate-800 mt-auto
+}
+
+.btn-blue {
+    @apply bg-sky-600 shadow rounded duration-200
+}
+
+.btn-blue:hover {
+    @apply bg-sky-800
+}
+
+.btn-blue:disabled {
+    @apply bg-sky-400
+}
+
+.btn-red {
+    @apply bg-red-600 shadow rounded duration-200
+}
+
+.btn-red:hover {
+    @apply bg-red-800
+} 
+
+.btn-red:disabled {
+    @apply bg-red-400
+}
+
+.stat-box {
+    @apply w-full shadow-colored rounded p-1
+}
+
+.input-box {
+    @apply bg-transparent shadow-colored rounded p-2
+}
