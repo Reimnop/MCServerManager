@@ -464,8 +464,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 .mt-2 {
   margin-top: 0.5rem;
 }
+.mt-auto {
+  margin-top: auto;
+}
 .mt-4 {
   margin-top: 1rem;
+}
+.inline {
+  display: inline;
 }
 .flex {
   display: flex;
@@ -482,11 +488,17 @@ Ensure the default browser behavior of the `hidden` attribute.
 .w-full {
   width: 100%;
 }
+.w-24 {
+  width: 6rem;
+}
 .basis-1\/3 {
   flex-basis: 33.333333%;
 }
 .basis-2\/3 {
   flex-basis: 66.666667%;
+}
+.border-collapse {
+  border-collapse: collapse;
 }
 .cursor-text {
   cursor: text;
@@ -497,11 +509,20 @@ Ensure the default browser behavior of the `hidden` attribute.
 .flex-row {
   flex-direction: row;
 }
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
 .flex-col {
   flex-direction: column;
 }
 .items-start {
   align-items: flex-start;
+}
+.items-center {
+  align-items: center;
+}
+.items-baseline {
+  align-items: baseline;
 }
 .justify-center {
   justify-content: center;
@@ -524,6 +545,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 .border-none {
   border-style: none;
 }
+.border-slate-800 {
+  --tw-border-opacity: 1;
+  border-color: rgb(30 41 59 / var(--tw-border-opacity));
+}
 .bg-slate-700 {
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
@@ -534,6 +559,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .bg-transparent {
   background-color: transparent;
+}
+.p-2 {
+  padding: 0.5rem;
 }
 .p-8 {
   padding: 2rem;
@@ -558,6 +586,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-right {
   text-align: right;
 }
+.align-baseline {
+  vertical-align: baseline;
+}
 .align-top {
   vertical-align: top;
 }
@@ -577,10 +608,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
-}
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 .text-slate-100 {
   --tw-text-opacity: 1;
@@ -748,6 +775,21 @@ body {
 .input-box {
   border-radius: 0.25rem;
   background-color: transparent;
+  padding: 0.5rem;
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-shadow-color: #0f172a;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.global-modal {
+  z-index: 102;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.25rem;
+  --tw-bg-opacity: 1;
+  background-color: rgb(51 65 85 / var(--tw-bg-opacity));
   padding: 0.5rem;
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);

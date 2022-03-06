@@ -77,3 +77,7 @@ body {
 .input-box {
     @apply bg-transparent shadow-colored rounded p-2
 }
+
+.global-modal {
+    @apply bg-slate-700 shadow-colored rounded p-2 z-[102] flex flex-col
+}

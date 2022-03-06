@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=JetBrains+Mono&display=swap');
+
 html, body {
     font-family: 'JetBrains Mono', sans-serif;
+    font-weight: 400;
 }
 
 h1:focus {

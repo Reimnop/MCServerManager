@@ -1,0 +1,22 @@
+<div>
+    <p>
+        Could not start your server.<br>
+        Reason: @Message<br>
+        Please check your config.
+    </p>
+
+    <div class="flex flex-row-reverse gap-2 mt-auto">
+        <button class="btn-blue p-2 w-24" @onclick="Ok">OK</button>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Message { get; set; }
+
+    [CascadingParameter] 
+    public BlazoredModalInstance BlazoredModal { get; set; }
+
+    private async Task Ok() => await BlazoredModal.CloseAsync(ModalResult.Ok(true));
+}

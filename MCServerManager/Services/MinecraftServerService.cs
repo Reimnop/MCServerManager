@@ -3,7 +3,13 @@ using MCServerManager.Data;
 
 namespace MCServerManager.Services;
 
-public delegate void ServerStatusChangedEventHandler(object sender, bool serverStatus);
+public class ServerStatusChangedEventArgs : EventArgs 
+{
+    public bool ServerStatus;
+    public DateTime Time;
+}
+
+public delegate void ServerStatusChangedEventHandler(object sender, ServerStatusChangedEventArgs args);
 public delegate void ServerConsoleReceivedEventHandler(object sender);
 
 public class MinecraftServerService
@@ -13,7 +19,11 @@ public class MinecraftServerService
     public event ServerStatusChangedEventHandler? OnServerStatusChanged;
     public event ServerConsoleReceivedEventHandler? OnServerConsoleReceived;
 
-    public string ConsoleOutput { get; private set; } = string.Empty;
+    public DateTime? ServerStartedTime;
+
+    public string ConsoleOutput => string.Join("\n", consoleLines);
+
+    private readonly List<string> consoleLines = new();
 
     private static Process? process;
 
@@ -33,7 +43,7 @@ public class MinecraftServerService
         process.StartInfo.RedirectStandardOutput = true;
         process.EnableRaisingEvents = true;
         
-        ConsoleOutput = string.Empty;
+        consoleLines.Clear();
         OnServerConsoleReceived?.Invoke(this);
         
         process.OutputDataReceived += OnOutputDataReceived;
@@ -41,18 +51,37 @@ public class MinecraftServerService
         process.Start();
         process.BeginOutputReadLine();
         
-        OnServerStatusChanged?.Invoke(this, true);
+        ServerStartedTime = DateTime.UtcNow;
+        OnServerStatusChanged?.Invoke(this, new ServerStatusChangedEventArgs 
+        {
+            ServerStatus = true,
+            Time = ServerStartedTime.Value
+        });
     }
     
     private void OnOutputDataReceived(object sender, DataReceivedEventArgs args)
     {
-        ConsoleOutput += args.Data + "\n";
+        if (args.Data == null) 
+        {
+            return;
+        }
+
+        consoleLines.Add(args.Data);
+        if (consoleLines.Count > 80)
+        {
+            consoleLines.RemoveAt(0);
+        }
         OnServerConsoleReceived?.Invoke(this);
     }
 
     private void OnExited(object? sender, EventArgs args)
     {
-        OnServerStatusChanged?.Invoke(this, false);
+        ServerStartedTime = null;
+        OnServerStatusChanged?.Invoke(this, new ServerStatusChangedEventArgs 
+        {
+            ServerStatus = false,
+            Time = DateTime.UtcNow
+        });
         
         process.OutputDataReceived -= OnOutputDataReceived;
         process.Exited -= OnExited;

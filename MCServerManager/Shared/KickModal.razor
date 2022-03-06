@@ -1,0 +1,29 @@
+@using MCServerManager.Services
+
+@inject MinecraftServerService MinecraftServerService
+
+<div>
+    <p>Are you sure you want to kick @Name?</p>
+
+    <div class="flex flex-row-reverse gap-2 mt-auto">
+        <button class="btn-blue p-2 w-24" @onclick="Yes">Yes</button>
+        <button class="btn-red p-2 w-24" @onclick="No">No</button>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Name { get; set; }
+
+    [CascadingParameter] 
+    public BlazoredModalInstance BlazoredModal { get; set; }
+
+    private async Task Yes() 
+    {
+        MinecraftServerService.SendCommand($"kick {Name}");
+        await BlazoredModal.CloseAsync(ModalResult.Ok(true));
+    }
+
+    private async Task No() => await BlazoredModal.CancelAsync();
+}

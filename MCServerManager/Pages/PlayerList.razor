@@ -1,0 +1,106 @@
+@page "/player_list"
+@using MineStatLib
+@using MCServerManager.Services
+@using System.Text.RegularExpressions
+
+@implements IDisposable
+@inject ServerStatsService serverStatsService
+
+<PageTitle>Player list - MCServerManager</PageTitle>
+
+@if (serverStats.HasValue) 
+{
+    <div class="flex flex-col gap-2">
+        <div class="p-2 shadow-colored rounded w-full flex flex-row gap-2 items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+            <input class="bg-transparent rounded outline-none w-full" @bind="filter" @bind:event="oninput" placeholder="Search"/>
+        </div>
+        <table class="w-full border-collapse shadow-colored">
+            <thead class="bg-slate-800">
+                <tr>
+                    <th scope="col" class="text-left">Name</th>
+                    <th scope="col" class="text-left">UUID</th>
+                    <th scope="col" class="text-left">Kick</th>
+                    <th scope="col" class="text-left">Ban</th>
+                </tr>
+            </thead>
+            @foreach (Player player in serverStats.Value.Players)
+            {
+                if (!IsVisible(player))
+                {
+                    continue;
+                }
+
+                string avatarLink = $"https://crafatar.com/avatars/{player.Uuid}";
+                <tr class="align-baseline">
+                    <td class="border border-slate-800">
+                        <img src=@avatarLink alt=@player.Name width="24" height="24" class="inline"> @player.Name
+                    </td>
+                    <td class="border border-slate-800">@player.Uuid</td>
+                    <td class="border border-slate-800">
+                        <button class="btn-blue w-full" @onclick="() => ShowKickModal(player)">Kick</button>
+                    </td>
+                    <td class="border border-slate-800">
+                        <button class="btn-red w-full" @onclick="() => ShowBanModal(player)">Ban</button>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+else 
+{
+    <div class="text-center">
+        <h1>Could not retrieve server stats.</h1>
+    </div>
+}
+
+@code {
+    private ServerStats? serverStats;
+
+    private string filter = string.Empty;
+
+    [CascadingParameter] 
+    public IModalService Modal { get; set; }
+
+    protected override void OnInitialized()
+    {
+        serverStats = serverStatsService.CurrentStats;
+        serverStatsService.OnServerStatsUpdate += OnServerStatsUpdate;
+    }
+
+    private void ShowKickModal(Player player) 
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(KickModal.Name), player.Name);
+
+        Modal.Show<KickModal>("Kick player", parameters);
+    }
+
+    private void ShowBanModal(Player player) 
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(BanModal.Name), player.Name);
+
+        Modal.Show<BanModal>("Ban player", parameters);
+    }
+
+    private bool IsVisible(Player player) 
+    {
+        return Regex.Match(player.Name, filter).Success;
+    }
+
+    private async void OnServerStatsUpdate(object sender, ServerStats? serverStats)
+    {
+        this.serverStats = serverStats;
+        
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() 
+    {
+        serverStatsService.OnServerStatsUpdate -= OnServerStatsUpdate;
+    }
+}
