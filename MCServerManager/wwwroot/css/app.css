@@ -19,7 +19,7 @@ body {
 }
 
 .nav-link:hover {
-    @apply: text-slate-400 
+    @apply text-slate-400 
 }
 
 .nav-link .nav-link-bg {
