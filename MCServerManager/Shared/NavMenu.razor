@@ -1,10 +1,12 @@
-﻿<div class="p-4 shadow-colored bg-slate-800 text-slate-100 text-center">
+﻿@inject NavigationManager navigationManager
+
+<div class="p-4 shadow-colored bg-slate-800 text-slate-100 text-center">
     <a class="navbar-brand" href="">MCServerManager</a>
 </div>
 
 <nav class="flex flex-col">
     <div class="sidebar-item">
-        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+        <NavLink class="nav-link" href="home" Match="NavLinkMatch.All">
             <div class="nav-link-bg">
                 <span class="oi oi-home px-2" aria-hidden="true"></span> Home
             </div>
@@ -24,4 +26,12 @@
             </div>
         </NavLink>
     </div>
+    <button class="btn-red flex-end m-2" @onclick="@SignOut">Sign out</button>
 </nav>
+
+@code {
+    private void SignOut()
+    {
+        navigationManager.NavigateTo("/logout", forceLoad: true);
+    }
+}

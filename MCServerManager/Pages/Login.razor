@@ -1,0 +1,61 @@
+﻿@page "/"
+
+@using Microsoft.AspNetCore.Identity
+@using MCServerManager.Models
+
+@inject NavigationManager navigationManager
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
+@attribute [AllowAnonymous]
+
+@layout MinimalLayout
+
+<div class="absolute w-96 left-[50vw] top-[50vh] translate-x-[-50%] translate-y-[-50%]">
+    <div class="card">
+        <div class="card-header">MCServerManager</div>
+        <EditForm Model="@userInputAuthModel" OnValidSubmit="HandleLogin">
+            <div class="card-body flex flex-col">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <span class="text-red-500">@authText</span>
+    
+                <label for="email">Email</label>
+                <InputText id="email" class="input-box" @bind-Value="userInputAuthModel.Email" placeholder="Email"/>
+                <label for="password">Password</label>
+                <InputText id="password" type="password" class="input-box" @bind-Value="userInputAuthModel.Password" placeholder="Password"/>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-blue shadow-colored w-full">Login</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private UserInputAuthModel userInputAuthModel = new();
+    private string authText = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        var user = await userManager.FindByEmailAsync(userInputAuthModel.Email);
+
+        if (!await signInManager.CanSignInAsync(user))
+        {
+            authText = "Your account is blocked!";
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        var result = await signInManager.CheckPasswordSignInAsync(user, userInputAuthModel.Password, false);
+        if (!result.Succeeded)
+        {
+            authText = "Wrong email or password!";
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        Guid key = BlazorCookieLoginMiddleware.AnnounceLogin(userInputAuthModel);
+        navigationManager.NavigateTo($"/?key={key}", true);
+    }
+}

@@ -457,9 +457,21 @@ Ensure the default browser behavior of the `hidden` attribute.
     max-width: 1536px;
   }
 }
+.absolute {
+  position: absolute;
+}
 .sticky {
   position: -webkit-sticky;
   position: sticky;
+}
+.left-\[50vw\] {
+  left: 50vw;
+}
+.top-\[50vh\] {
+  top: 50vh;
+}
+.m-2 {
+  margin: 0.5rem;
 }
 .mt-2 {
   margin-top: 0.5rem;
@@ -488,6 +500,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .w-full {
   width: 100%;
 }
+.w-96 {
+  width: 24rem;
+}
 .w-24 {
   width: 6rem;
 }
@@ -499,6 +514,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .border-collapse {
   border-collapse: collapse;
+}
+.translate-x-\[-50\%\] {
+  --tw-translate-x: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.translate-y-\[-50\%\] {
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .cursor-text {
   cursor: text;
@@ -657,7 +680,8 @@ body {
 }
 
 .nav-link:hover {
-    @apply: text-slate-400 
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity));
 }
 
 .nav-link .nav-link-bg {

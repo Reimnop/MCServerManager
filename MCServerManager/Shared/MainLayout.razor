@@ -1,15 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navManager
 
 <PageTitle>MCServerManager</PageTitle>
 
 <div class="page">
     <div class="shadow-colored sidebar bg-slate-700">
-        <NavMenu />
+        <NavMenu/>
     </div>
-
-    <main>
-        <article class="content p-8">
-            @Body
-        </article>
+    <main class="content p-8">
+        @Body
     </main>
 </div>
