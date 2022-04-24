@@ -40,6 +40,13 @@
     {
         var user = await userManager.FindByEmailAsync(userInputAuthModel.Email);
 
+        if (user == null)
+        {
+            authText = "Wrong email or password!";
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
         if (!await signInManager.CanSignInAsync(user))
         {
             authText = "Your account is blocked!";
