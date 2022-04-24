@@ -32,6 +32,7 @@
 @code {
     private void SignOut()
     {
+        // There isn't actually a page for logout; it's handled by middleware
         navigationManager.NavigateTo("/logout", true);
     }
 }
