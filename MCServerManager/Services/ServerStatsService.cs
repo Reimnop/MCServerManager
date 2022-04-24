@@ -75,7 +75,7 @@ public class ServerStatsService
             {
                 CurrentPlayers = ms.CurrentPlayersInt,
                 MaxPlayers = ms.MaximumPlayersInt,
-                Players = ms.Players
+                Players = ms.Players.OrderBy(x => x.Name).ToArray()
             };
         }
 
