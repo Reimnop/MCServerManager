@@ -8,8 +8,11 @@
             </AuthorizeRouteView>
         </Found>
         <NotFound>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <p>Sorry, there's nothing at this address.</p>
+            <LayoutView Layout="@typeof(MinimalLayout)">
+                <div class="text-center mt-8">
+                    <b class="text-6xl">Not found!</b>
+                    <p class="mt-4">Sorry, there's nothing at this address.</p>
+                </div>
             </LayoutView>
         </NotFound>
     </Router>

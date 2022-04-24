@@ -473,14 +473,17 @@ Ensure the default browser behavior of the `hidden` attribute.
 .m-2 {
   margin: 0.5rem;
 }
+.mt-8 {
+  margin-top: 2rem;
+}
+.mt-4 {
+  margin-top: 1rem;
+}
 .mt-2 {
   margin-top: 0.5rem;
 }
 .mt-auto {
   margin-top: auto;
-}
-.mt-4 {
-  margin-top: 1rem;
 }
 .inline {
   display: inline;
@@ -620,6 +623,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .align-bottom {
   vertical-align: bottom;
+}
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
 }
 .text-sm {
   font-size: 0.875rem;
